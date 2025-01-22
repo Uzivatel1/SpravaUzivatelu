@@ -36,7 +36,8 @@ namespace SpravaUzivatelu.Controllers
         {
             // Set current sort options for display in the view
             ViewData["CurrentSort"] = sortOrder;
-            ViewData["PrijmeniSortParm"] = String.IsNullOrEmpty(sortOrder) ? "prijmeni_desc" : "";
+            ViewData["IdSortParm"] = String.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
+            ViewData["PrijmeniSortParm"] = sortOrder == "Prijmeni" ? "prijmeni_desc" : "Prijmeni";
             ViewData["JmenoSortParm"] = sortOrder == "Jmeno" ? "jmeno_desc" : "Jmeno";
 
             // Reset page number if new search criteria are applied
@@ -86,10 +87,12 @@ namespace SpravaUzivatelu.Controllers
             // Apply sorting based on selected sort order
             uzivatele = sortOrder switch
             {
+                "id_desc" => uzivatele.OrderByDescending(s => s.Id),
+                "Prijmeni" => uzivatele.OrderBy(s => s.Prijmeni),
                 "prijmeni_desc" => uzivatele.OrderByDescending(s => s.Prijmeni),
                 "Jmeno" => uzivatele.OrderBy(s => s.Jmeno),
                 "jmeno_desc" => uzivatele.OrderByDescending(s => s.Jmeno),
-                _ => uzivatele.OrderBy(s => s.Prijmeni),
+                _ => uzivatele.OrderBy(s => s.Id),
             };
 
             int pageSize = 8;

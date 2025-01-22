@@ -5,7 +5,7 @@ namespace SpravaUzivatelu.Models
     public class LoginViewModel
     {
         [Required(ErrorMessage = "Vyplňte uživatelské jméno")]
-        [Display(Name = "Login")]
+        [Display(Name = "Uživatelské jméno")]
         public string Login { get; set; } = "";
 
         [Required(ErrorMessage = "Vyplňte heslo")]

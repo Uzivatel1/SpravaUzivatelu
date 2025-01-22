@@ -8,7 +8,7 @@
 @if (User.IsInRole(UserRoles.Admin))
 {
     <p class="py-3">
-        <a class="create-new" asp-action="Create">New Shoes</a>
+        <a class="create-new" asp-action="Create">Nový uživatel</a>
     </p>
 }
 
@@ -16,14 +16,14 @@
     <div class="container pb-2">
         <div class="row justify-content-md-start">
             <div class="col col-md-auto border">
-                Find by brand: <input type="text" name="SearchPrijmeni" value="@ViewData["CurrentFilterPrijmeni"]" />
+                Zadejte příjmení: <input type="text" name="SearchPrijmeni" value="@ViewData["CurrentFilterPrijmeni"]" />
             </div>
             <div class="col col-md-auto border">
-                Find by size: <input type="text" name="SearchJmeno" value="@ViewData["CurrentFilterJmeno"]" />
+                Zadejte jméno: <input type="text" name="SearchJmeno" value="@ViewData["CurrentFilterJmeno"]" />
             </div>            
             <div class="col-md-auto ms-5 ps-5">
-                <input type="submit" value="Search" class="btn" /> |
-                <a asp-action="Index">Back to Full List</a>
+                <input type="submit" value="Vyhledat" class="btn" /> |
+                <a asp-action="Index">Zpět na seznam</a>
             </div>
         </div>
     </div>
@@ -33,7 +33,12 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>Id</th>
+                <th>
+                    <a asp-action="Index"
+                       asp-route-sortOrder="@ViewData["IdSortParm"]"
+                       asp-route-currentFilterPrijmeni="@ViewData["CurrentFilterPrijmeni"]"
+                       asp-route-currentFilterJmeno="@ViewData["CurrentFilterJmeno"]">Id</a>
+                </th>
                 <th>
                     <a asp-action="Index"
                        asp-route-sortOrder="@ViewData["PrijmeniSortParm"]"
@@ -65,8 +70,8 @@
                     @if (User.IsInRole(UserRoles.Admin))
                     {
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Upravit</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Smazat</a>
                         </td>
                     }
                 </tr>
@@ -89,7 +94,7 @@
    asp-route-currentFilterPrijmeni="@ViewData["CurrentFilterPrijmeni"]"
    asp-route-currentFilterJmeno="@ViewData["CurrentFilterJmeno"]"
    class="btn @prevDisabled" id="prev-next">
-    Previous
+    Předchozí
 </a>
 
 @for (int i = 1; i <= totalPages; i++)
@@ -114,5 +119,5 @@
    asp-route-currentFilterPrijmeni="@ViewData["CurrentFilterPrijmeni"]"
    asp-route-currentFilterJmeno="@ViewData["CurrentFilterJmeno"]"
    class="btn @nextDisabled" id="prev-next">
-    Next
+    Následující
 </a>

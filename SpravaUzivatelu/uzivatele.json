@@ -6,7 +6,7 @@
   },
   {
     "Id": 2,
-    "Jmeno": "Libor",
+    "Jmeno": "Daibor",
     "Prijmeni": "Veselý"
   },
   {
@@ -113,10 +113,5 @@
     "Id": 23,
     "Jmeno": "Veronika",
     "Prijmeni": "Zemanová"
-  },
-  {
-    "Id": 24,
-    "Jmeno": "Adam",
-    "Prijmeni": "Fiala"
   }
 ]

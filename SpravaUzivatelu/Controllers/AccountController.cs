@@ -23,10 +23,11 @@ namespace SpravaUzivatelu.Controllers
 
         private IActionResult RedirectToLocal(string? returnUrl)
         {
-            if (Url.IsLocalUrl(returnUrl))
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
                 return Redirect(returnUrl);
-            else
-                return RedirectToAction(nameof(UzivateleController.Index), "Uzivatele");
+            }
+            return RedirectToAction(nameof(UzivateleController.Index), "Uzivatele");
         }
 
         public IActionResult Login(string? returnUrl = null)
@@ -36,7 +37,7 @@ namespace SpravaUzivatelu.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken] // náhodně vygenerovaný řetězec, který se generuje pro každého uživatele zvlášť
+        [ValidateAntiForgeryToken] // Náhodně vygenerovaný řetězec, který se generuje pro každého uživatele zvlášť
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SpravaUzivatelu.Data;
+using SpravaUzivatelu.Models;
 
 namespace SpravaUzivatelu
 {
@@ -24,7 +25,14 @@ namespace SpravaUzivatelu
                 options.Password.RequireNonAlphanumeric = false; // Nevyžadovat speciální znak
                 options.Password.RequiredLength = 4; // Nastavit minimální délku (napø. 4 znaky)
             })
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddErrorDescriber<CzechIdentityErrorDescriberViewModel>(); // Použití èeských chybových zpráv;
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = "/Account/Login"; // Pøesmìrování na pøihlášení pøi pøístupu bez oprávnìní
+            });
+
 
             builder.Services.AddControllersWithViews();
 
