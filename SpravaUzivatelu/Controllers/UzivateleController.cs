@@ -95,7 +95,7 @@ namespace SpravaUzivatelu.Controllers
                 _ => uzivatele.OrderBy(s => s.Id),
             };
 
-            int pageSize = 8;
+            int pageSize = 6;
             // Return the paginated list of shoes to the view
             return View(await PaginatedList<Uzivatel>.CreateAsync(uzivatele.AsNoTracking(), pageNumber ?? 1, pageSize));
         }

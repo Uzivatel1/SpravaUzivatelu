@@ -2,7 +2,7 @@
 @model PaginatedList<SpravaUzivatelu.Models.Uzivatel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Seznam uživatelů";
 }
 
 @if (User.IsInRole(UserRoles.Admin))
@@ -13,7 +13,7 @@
 }
 
 <form asp-action="Index" method="get">
-    <div class="container pb-2">
+    <div class="container">
         <div class="row justify-content-md-start">
             <div class="col col-md-auto border">
                 Zadejte příjmení: <input type="text" name="SearchPrijmeni" value="@ViewData["CurrentFilterPrijmeni"]" />
