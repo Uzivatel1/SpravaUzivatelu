@@ -72,16 +72,30 @@ namespace SpravaUzivatelu
                 context.Database.EnsureCreated();
                 await DbInitializer.InitializeAsync(context, jsonDataService);
 
-                // Vytvoøení role administrátora
-                RoleManager<IdentityRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                UserManager<IdentityUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                // Vytvoøení role administrátora a pøidání uživatele synchronnì
+                RoleManager<IdentityRole> roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                UserManager<IdentityUser> userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+
+                if (!roleManager.RoleExistsAsync(UserRoles.Admin).Result)
+                {
+                    roleManager.CreateAsync(new IdentityRole(UserRoles.Admin)).Wait();
+                }
+
                 IdentityUser? defaultAdminUser = await userManager.FindByNameAsync("admin");
+                if (defaultAdminUser is null)
+                {
+                    var adminUser = new IdentityUser { UserName = "admin" };
+                    var createUserResult = userManager.CreateAsync(adminUser, "1234").Result;
 
-                if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
-                    await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-
-                if (defaultAdminUser is not null && !await userManager.IsInRoleAsync(defaultAdminUser, UserRoles.Admin))
-                    await userManager.AddToRoleAsync(defaultAdminUser, UserRoles.Admin);
+                    if (createUserResult.Succeeded)
+                    {
+                        userManager.AddToRoleAsync(adminUser, UserRoles.Admin).Wait();
+                    }
+                }
+                else if (!userManager.IsInRoleAsync(defaultAdminUser, UserRoles.Admin).Result)
+                {
+                    userManager.AddToRoleAsync(defaultAdminUser, UserRoles.Admin).Wait();
+                }
             }
 
             // app.UseHttpsRedirection();
