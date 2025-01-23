@@ -33,17 +33,16 @@ namespace SpravaUzivatelu
                 options.AccessDeniedPath = "/Account/Login"; // Pøesmìrování na pøihlášení pøi pøístupu bez oprávnìní
             });
 
-
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddScoped<JsonDataService>();
 
+            var app = builder.Build();
+
             // Nastavení konfigurovatelné IP adresy a portu
             var ipAddress = builder.Configuration["ServerSettings:IPAddress"] ?? "192.168.1.20";
             var httpPort = builder.Configuration["ServerSettings:HttpPort"] ?? "5000"; // HTTP port
-            var httpsPort = builder.Configuration["ServerSettings:HttpsPort"] ?? "5001"; // HTTPS port
-
-            var app = builder.Build();
+            var httpsPort = builder.Configuration["ServerSettings:HttpsPort"] ?? "5001"; // HTTPS port            
 
             // Pøidání HTTP
             app.Urls.Add($"http://{ipAddress}:{httpPort}");
