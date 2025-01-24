@@ -44,14 +44,14 @@ namespace SpravaUzivatelu
 
             // Konfigurovatelná IP adresa a porty
             var ipAddress = builder.Configuration["ServerSettings:IPAddress"] ?? "192.168.1.20"; // Výchozí IP
-            var httpPort = builder.Configuration["ServerSettings:HttpsPort"] ?? "5000"; // Výchozí HTTPS port
-            var httpsPort = builder.Configuration["ServerSettings:HttpPort"] ?? "5001"; // Výchozí HTTP port
-
-            // Pøidání HTTP: odeberte komentáø pro povolení pøipojení pøes HTTP
-            app.Urls.Add($"http://{ipAddress}:{httpPort}");
+            var httpsPort = builder.Configuration["ServerSettings:HttpsPort"] ?? "5000"; // Výchozí HTTPS port
+            var httpPort = builder.Configuration["ServerSettings:HttpPort"] ?? "5001"; // Výchozí HTTP port
 
             // Pøidání HTTPS: odeberte komentáø pro povolení pøipojení pøes HTTPS
             app.Urls.Add($"https://{ipAddress}:{httpsPort}");
+
+            // Pøidání HTTP: odeberte komentáø pro povolení pøipojení pøes HTTP
+            app.Urls.Add($"http://{ipAddress}:{httpPort}");
 
             // Konfigurace HTTP pipeline
             if (app.Environment.IsDevelopment()) // Vývojový režim
@@ -66,7 +66,12 @@ namespace SpravaUzivatelu
 
             using (var scope = app.Services.CreateScope())
             {
-                await DatabaseSeeder.SeedAsync(scope.ServiceProvider); // Inicializace databáze
+                // Inicializace databáze
+                await DatabaseSeeder.SeedAsync(scope.ServiceProvider);
+
+                // Volání metody pro inicializaci JSON souboru
+                var jsonDataService = scope.ServiceProvider.GetRequiredService<JsonDataService>();
+                await jsonDataService.InitializeJsonFileAsync(); // Inicializace souboru pøi spuštìní aplikace
             }
 
             app.UseHttpsRedirection(); // Pøesmìrování HTTP na HTTPS

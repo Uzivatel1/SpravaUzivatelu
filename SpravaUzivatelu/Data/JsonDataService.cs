@@ -1,4 +1,5 @@
-﻿using SpravaUzivatelu.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SpravaUzivatelu.Models;
 using System.Text.Json;
 
 namespace SpravaUzivatelu.Data
@@ -103,6 +104,20 @@ namespace SpravaUzivatelu.Data
             {
                 _context.Uzivatele.Remove(dbUzivatel); // Odstraní uživatele z databáze
                 await _context.SaveChangesAsync(); // Uloží změny do databáze
+            }
+        }
+
+        // Metoda pro inicializaci JSON souboru při spuštění aplikace
+        public async Task InitializeJsonFileAsync()
+        {
+            // Zkontrolujeme, zda JSON soubor neexistuje
+            if (!File.Exists(_filePath))
+            {
+                // Načteme uživatele z databáze
+                var uzivatele = await _context.Uzivatele.ToListAsync();
+
+                // Uložíme uživatele do JSON souboru
+                await SaveUzivateleAsync(uzivatele);
             }
         }
     }
