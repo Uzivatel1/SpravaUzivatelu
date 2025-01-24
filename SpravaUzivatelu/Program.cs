@@ -64,38 +64,7 @@ namespace SpravaUzivatelu
 
             using (var scope = app.Services.CreateScope())
             {
-                var services = scope.ServiceProvider;
-
-                var context = services.GetRequiredService<ApplicationDbContext>();
-                var jsonDataService = services.GetRequiredService<JsonDataService>();
-
-                context.Database.EnsureCreated();
-                await DbInitializer.InitializeAsync(context, jsonDataService);
-
-                // Vytvoøení role administrátora a pøidání uživatele synchronnì
-                RoleManager<IdentityRole> roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                UserManager<IdentityUser> userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-
-                if (!roleManager.RoleExistsAsync(UserRoles.Admin).Result)
-                {
-                    roleManager.CreateAsync(new IdentityRole(UserRoles.Admin)).Wait();
-                }
-
-                IdentityUser? defaultAdminUser = await userManager.FindByNameAsync("admin");
-                if (defaultAdminUser is null)
-                {
-                    var adminUser = new IdentityUser { UserName = "admin" };
-                    var createUserResult = userManager.CreateAsync(adminUser, "1234").Result;
-
-                    if (createUserResult.Succeeded)
-                    {
-                        userManager.AddToRoleAsync(adminUser, UserRoles.Admin).Wait();
-                    }
-                }
-                else if (!userManager.IsInRoleAsync(defaultAdminUser, UserRoles.Admin).Result)
-                {
-                    userManager.AddToRoleAsync(defaultAdminUser, UserRoles.Admin).Wait();
-                }
+                await DatabaseSeeder.SeedAsync(scope.ServiceProvider);
             }
 
             // app.UseHttpsRedirection();
