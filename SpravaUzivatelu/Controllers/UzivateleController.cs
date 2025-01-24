@@ -15,7 +15,6 @@ namespace SpravaUzivatelu.Controllers
     public class UzivateleController : Controller
     {
         private readonly JsonDataService _jsonDataService;
-        // Dependency Injection: Injects ApplicationDbContext to interact with the database
         private readonly ApplicationDbContext _context;
 
         public UzivateleController(JsonDataService jsonDataService, ApplicationDbContext context)
@@ -24,67 +23,49 @@ namespace SpravaUzivatelu.Controllers
             _context = context;
         }
 
-        // GET: Uzivatele
         [AllowAnonymous]
         public async Task<IActionResult> Index(
             string sortOrder,
             string currentFilterPrijmeni,
-            string currentFilterJmeno,            
+            string currentFilterJmeno,
             string searchPrijmeni,
             string searchJmeno,
             int? pageNumber)
         {
-            // Set current sort options for display in the view
             ViewData["CurrentSort"] = sortOrder;
-            ViewData["IdSortParm"] = String.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
+            ViewData["IdSortParm"] = string.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
             ViewData["PrijmeniSortParm"] = sortOrder == "Prijmeni" ? "prijmeni_desc" : "Prijmeni";
             ViewData["JmenoSortParm"] = sortOrder == "Jmeno" ? "jmeno_desc" : "Jmeno";
 
-            // Reset page number if new search criteria are applied
-            if ((searchPrijmeni != null) || (searchJmeno != null))
+            if (searchPrijmeni != null || searchJmeno != null)
             {
                 pageNumber = 1;
             }
-
             else
             {
-                // Maintain current filters if no new search criteria are applied
                 searchPrijmeni = currentFilterPrijmeni;
                 searchJmeno = currentFilterJmeno;
             }
 
-            // Store the current filter criteria for use in the view
             ViewData["CurrentFilterPrijmeni"] = searchPrijmeni;
             ViewData["CurrentFilterJmeno"] = searchJmeno;
 
-            // Initialize the query for users
             var uzivatele = from s in _context.Uzivatele
                             select s;
 
-            // Apply filtering based on search criteria
-
-            // Filters on brand, size, and rented/unrented status
             if (!string.IsNullOrEmpty(searchPrijmeni) && !string.IsNullOrEmpty(searchJmeno))
             {
                 uzivatele = uzivatele.Where(s => s.Prijmeni.Contains(searchPrijmeni) && s.Jmeno.Contains(searchJmeno));
             }
-
             else if (!string.IsNullOrEmpty(searchPrijmeni))
             {
                 uzivatele = uzivatele.Where(s => s.Prijmeni.Contains(searchPrijmeni));
             }
-
             else if (!string.IsNullOrEmpty(searchJmeno))
             {
                 uzivatele = uzivatele.Where(s => s.Jmeno.Contains(searchJmeno));
             }
 
-            else if (!string.IsNullOrEmpty(searchPrijmeni) || !string.IsNullOrEmpty(searchJmeno))
-            {
-                uzivatele = uzivatele.Where(s => s.Prijmeni.Contains(searchPrijmeni)|| s.Jmeno.Contains(searchJmeno));
-            }
-
-            // Apply sorting based on selected sort order
             uzivatele = sortOrder switch
             {
                 "id_desc" => uzivatele.OrderByDescending(s => s.Id),
@@ -96,7 +77,6 @@ namespace SpravaUzivatelu.Controllers
             };
 
             int pageSize = 6;
-            // Return the paginated list of shoes to the view
             return View(await PaginatedList<Uzivatel>.CreateAsync(uzivatele.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 

@@ -20,7 +20,7 @@
             </div>
             <div class="col col-md-auto border">
                 Zadejte jméno: <input type="text" name="SearchJmeno" value="@ViewData["CurrentFilterJmeno"]" />
-            </div>            
+            </div>
             <div class="col-md-auto ms-5 ps-5">
                 <input type="submit" value="Vyhledat" class="btn" /> |
                 <a asp-action="Index">Zpět na seznam</a>
@@ -50,7 +50,7 @@
                        asp-route-sortOrder="@ViewData["JmenoSortParm"]"
                        asp-route-currentFilterPrijmeni="@ViewData["CurrentFilterPrijmeni"]"
                        asp-route-currentFilterJmeno="@ViewData["CurrentFilterJmeno"]">Jméno</a>
-                </th>                
+                </th>
                 <th></th>
             </tr>
         </thead>
@@ -58,15 +58,9 @@
             @foreach (var item in Model)
             {
                 <tr style="cursor:pointer; color: #292d73" onclick="window.location='@Url.Action("Details", "Uzivatele", new { item.Id })';">
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Id)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Prijmeni)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Jmeno)
-                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Prijmeni)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Jmeno)</td>
                     @if (User.IsInRole(UserRoles.Admin))
                     {
                         <td>

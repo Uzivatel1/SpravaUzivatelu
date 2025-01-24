@@ -1,4 +1,4 @@
-﻿namespace SpravaUzivatelu
+﻿namespace SpravaUzivatelu.Data
 {
     public class UserRoles
     {

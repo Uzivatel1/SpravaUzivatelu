@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using SpravaUzivatelu.Data;
 
-namespace SpravaUzivatelu
+namespace SpravaUzivatelu.Data
 {
     public class DatabaseSeeder
     {
