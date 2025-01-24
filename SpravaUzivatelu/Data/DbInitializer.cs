@@ -41,7 +41,7 @@ namespace SpravaUzivatelu.Data
                 new Uzivatel { Jmeno = "Klára", Prijmeni = "Kolářová" },
                 new Uzivatel { Jmeno = "Martin", Prijmeni = "Navrátil" },
                 new Uzivatel { Jmeno = "Veronika", Prijmeni = "Zemanová" },
-                new Uzivatel { Jmeno = "Adam", Prijmeni = "Fiala" }
+                new Uzivatel { Jmeno = "Zdeněk", Prijmeni = "Fiala" }
             };
 
             // Uložení dat do databáze

@@ -8,93 +8,101 @@ namespace SpravaUzivatelu.Data
         private readonly ApplicationDbContext _context;
         private readonly string _filePath = Path.Combine(Directory.GetCurrentDirectory(), "uzivatele.json");
 
+        // Konstruktor, který přijímá databázový kontext (Dependency Injection)
         public JsonDataService(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // Uloží uživatele do databáze a také do JSON souboru
+        // Přidá uživatele do databáze a zároveň ho uloží do JSON souboru
         public async Task AddUzivatelAsync(Uzivatel uzivatel)
         {
-            // Uložení do databáze
+            // Uložení uživatele do databáze
             _context.Add(uzivatel);
             await _context.SaveChangesAsync();
 
-            // Uložení do JSON souboru
+            // Načtení existujících uživatelů z JSON souboru
             var uzivatele = await GetUzivateleAsync();
-            uzivatele.Add(uzivatel);
-            await SaveUzivateleAsync(uzivatele);
+            uzivatele.Add(uzivatel); // Přidání nového uživatele do seznamu
+            await SaveUzivateleAsync(uzivatele); // Uložení seznamu zpět do JSON souboru
         }
 
-        // Uloží změněného uživatele do databáze a JSON souboru
+        // Aktualizuje uživatele v databázi a JSON souboru
         public async Task EditUzivatelAsync(Uzivatel uzivatel)
         {
-            // Uložení do databáze
+            // Aktualizace uživatele v databázi
             _context.Update(uzivatel);
             await _context.SaveChangesAsync();
 
-            // Uložení do JSON souboru
+            // Načtení existujících uživatelů z JSON souboru
             var uzivatele = await GetUzivateleAsync();
-            var existingUzivatel = uzivatele.FirstOrDefault(u => u.Id == uzivatel.Id);
+            var existingUzivatel = uzivatele.FirstOrDefault(u => u.Id == uzivatel.Id); // Najde uživatele podle ID
             if (existingUzivatel != null)
             {
+                // Aktualizace vlastností uživatele
                 existingUzivatel.Jmeno = uzivatel.Jmeno;
                 existingUzivatel.Prijmeni = uzivatel.Prijmeni;
-                await SaveUzivateleAsync(uzivatele);
+                await SaveUzivateleAsync(uzivatele); // Uložení změn do JSON souboru
             }
         }
 
-        // Uloží uživatele do JSON souboru
+        // Uloží seznam uživatelů do JSON souboru
         public async Task SaveUzivateleAsync(List<Uzivatel> uzivatele)
         {
             try
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(_filePath)); // Vytvoří složku, pokud neexistuje
+                // Zajistí, že složka pro soubor existuje
+                Directory.CreateDirectory(Path.GetDirectoryName(_filePath));
 
+                // Nastavení pro formátování JSON výstupu
                 var options = new JsonSerializerOptions
                 {
-                    WriteIndented = true,
-                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                    WriteIndented = true, // Přidá mezery pro čitelnější formát
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping // Povolení speciálních znaků
                 };
 
+                // Serializace seznamu uživatelů do JSON řetězce
                 var jsonString = JsonSerializer.Serialize(uzivatele, options);
-                await File.WriteAllTextAsync(_filePath, jsonString);
+                await File.WriteAllTextAsync(_filePath, jsonString); // Uložení JSON do souboru
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"Chyba při ukládání do JSON souboru: {ex.Message}");
-                throw;
+                throw; // Opětovné vyvolání výjimky
             }
         }
 
-        // Načte všechny uživatele z JSON souboru
+        // Načte seznam uživatelů z JSON souboru
         public async Task<List<Uzivatel>> GetUzivateleAsync()
         {
-            if (!File.Exists(_filePath))
+            if (!File.Exists(_filePath)) // Pokud soubor neexistuje, vrátí prázdný seznam
             {
                 return new List<Uzivatel>();
             }
 
+            // Načtení obsahu JSON souboru
             var jsonString = await File.ReadAllTextAsync(_filePath);
-            return JsonSerializer.Deserialize<List<Uzivatel>>(jsonString) ?? new List<Uzivatel>();
+            return JsonSerializer.Deserialize<List<Uzivatel>>(jsonString) ?? new List<Uzivatel>(); // Deserializace do seznamu uživatelů
         }
 
-        // Smaže uživatele jak z databáze, tak z JSON souboru
+        // Smaže uživatele z databáze i JSON souboru
         public async Task DeleteUzivatelAsync(int id)
         {
+            // Načtení existujících uživatelů z JSON souboru
             var uzivatele = await GetUzivateleAsync();
-            var uzivatel = uzivatele.FirstOrDefault(u => u.Id == id);
+            var uzivatel = uzivatele.FirstOrDefault(u => u.Id == id); // Najde uživatele podle ID
             if (uzivatel != null)
             {
-                uzivatele.Remove(uzivatel);
-                await SaveUzivateleAsync(uzivatele);
+                uzivatele.Remove(uzivatel); // Odebere uživatele ze seznamu
+                await SaveUzivateleAsync(uzivatele); // Uložení změn do JSON souboru
             }
 
-            var dbUzivatel = await _context.Uzivatele.FindAsync(id);
+            // Smazání uživatele z databáze
+            var dbUzivatel = await _context.Uzivatele.FindAsync(id); // Najde uživatele v databázi
             if (dbUzivatel != null)
             {
-                _context.Uzivatele.Remove(dbUzivatel);
-                await _context.SaveChangesAsync();
+                _context.Uzivatele.Remove(dbUzivatel); // Odstraní uživatele z databáze
+                await _context.SaveChangesAsync(); // Uloží změny do databáze
             }
         }
     }

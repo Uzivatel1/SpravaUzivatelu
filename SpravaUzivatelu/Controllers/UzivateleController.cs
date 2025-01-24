@@ -14,45 +14,54 @@ namespace SpravaUzivatelu.Controllers
     [Authorize(Roles = UserRoles.Admin)]
     public class UzivateleController : Controller
     {
-        private readonly JsonDataService _jsonDataService;
-        private readonly ApplicationDbContext _context;
+        // Služby používané v kontroleru
+        private readonly JsonDataService _jsonDataService; // Služba pro práci s daty uloženými v JSON
+        private readonly ApplicationDbContext _context; // Kontext databáze
 
+        // Konstruktor přijímá služby jako závislosti (Dependency Injection)
         public UzivateleController(JsonDataService jsonDataService, ApplicationDbContext context)
         {
             _jsonDataService = jsonDataService;
             _context = context;
         }
 
-        [AllowAnonymous]
+        // Akce pro zobrazení seznamu uživatelů s možností filtrování, třídění a stránkování
+        [AllowAnonymous] // Tuto akci může volat i anonymní uživatel
         public async Task<IActionResult> Index(
-            string sortOrder,
-            string currentFilterPrijmeni,
-            string currentFilterJmeno,
-            string searchPrijmeni,
-            string searchJmeno,
-            int? pageNumber)
+            string sortOrder, // Parametr pro třídění
+            string currentFilterPrijmeni, // Aktuální filtr podle příjmení
+            string currentFilterJmeno, // Aktuální filtr podle jména
+            string searchPrijmeni, // Hledané příjmení
+            string searchJmeno, // Hledané jméno
+            int? pageNumber) // Číslo aktuální stránky
         {
+            // Uložení aktuálního třídění do ViewData
             ViewData["CurrentSort"] = sortOrder;
             ViewData["IdSortParm"] = string.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
             ViewData["PrijmeniSortParm"] = sortOrder == "Prijmeni" ? "prijmeni_desc" : "Prijmeni";
             ViewData["JmenoSortParm"] = sortOrder == "Jmeno" ? "jmeno_desc" : "Jmeno";
 
+            // Pokud bylo zadáno nové vyhledávání, resetuje se číslo stránky
             if (searchPrijmeni != null || searchJmeno != null)
             {
                 pageNumber = 1;
             }
             else
             {
+                // Pokud není nové vyhledávání, použije se aktuální filtr
                 searchPrijmeni = currentFilterPrijmeni;
                 searchJmeno = currentFilterJmeno;
             }
 
+            // Uložení aktuálních filtrů do ViewData
             ViewData["CurrentFilterPrijmeni"] = searchPrijmeni;
             ViewData["CurrentFilterJmeno"] = searchJmeno;
 
+            // Dotaz na uživatele
             var uzivatele = from s in _context.Uzivatele
                             select s;
 
+            // Filtrování podle zadaného příjmení a jména
             if (!string.IsNullOrEmpty(searchPrijmeni) && !string.IsNullOrEmpty(searchJmeno))
             {
                 uzivatele = uzivatele.Where(s => s.Prijmeni.Contains(searchPrijmeni) && s.Jmeno.Contains(searchJmeno));
@@ -66,6 +75,7 @@ namespace SpravaUzivatelu.Controllers
                 uzivatele = uzivatele.Where(s => s.Jmeno.Contains(searchJmeno));
             }
 
+            // Třídění podle vybraného parametru
             uzivatele = sortOrder switch
             {
                 "id_desc" => uzivatele.OrderByDescending(s => s.Id),
@@ -76,49 +86,51 @@ namespace SpravaUzivatelu.Controllers
                 _ => uzivatele.OrderBy(s => s.Id),
             };
 
+            // Stránkování (počet položek na stránku)
             int pageSize = 6;
             return View(await PaginatedList<Uzivatel>.CreateAsync(uzivatele.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
-        // GET: Uzivatele/Details/5
+        // Akce pro zobrazení detailů uživatele
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return NotFound(); // Vrátí chybu 404, pokud není ID zadáno
             }
 
+            // Načte uživatele z JSON dat podle ID
             var uzivatel = (await _jsonDataService.GetUzivateleAsync())
                 .FirstOrDefault(m => m.Id == id);
             if (uzivatel == null)
             {
-                return NotFound();
+                return NotFound(); // Vrátí chybu 404, pokud uživatel neexistuje
             }
 
-            return View(uzivatel);
+            return View(uzivatel); // Vrátí pohled s detailem uživatele
         }
 
-        // GET: Uzivatele/Create
+        // GET akce pro vytvoření nového uživatele
         public IActionResult Create()
         {
-            return View();
+            return View(); // Zobrazí formulář pro vytvoření uživatele
         }
 
-        // POST: Uzivatele/Create
+        // POST akce pro vytvoření nového uživatele
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Jmeno,Prijmeni")] Uzivatel uzivatel)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Kontrola validity vstupních dat
             {
-                await _jsonDataService.AddUzivatelAsync(uzivatel); // Uloží jak do databáze, tak do JSON souboru
-                return RedirectToAction(nameof(Index));
+                await _jsonDataService.AddUzivatelAsync(uzivatel); // Uloží uživatele do databáze i JSON
+                return RedirectToAction(nameof(Index)); // Přesměruje zpět na seznam
             }
-            return View(uzivatel);
+            return View(uzivatel); // Znovu zobrazí formulář, pokud data nejsou validní
         }
 
-        // GET: Uzivatele/Edit/5
+        // GET akce pro editaci existujícího uživatele
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -126,34 +138,35 @@ namespace SpravaUzivatelu.Controllers
                 return NotFound();
             }
 
+            // Načte uživatele z JSON dat podle ID
             var uzivatel = (await _jsonDataService.GetUzivateleAsync())
                     .FirstOrDefault(m => m.Id == id);
             if (uzivatel == null)
             {
                 return NotFound();
             }
-            return View(uzivatel);
+            return View(uzivatel); // Zobrazí formulář pro editaci
         }
 
-        // POST: Uzivatele/Edit/5
+        // POST akce pro editaci existujícího uživatele
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Jmeno,Prijmeni")] Uzivatel uzivatel)
         {
             if (id != uzivatel.Id)
             {
-                return NotFound();
+                return NotFound(); // Vrátí chybu 404, pokud ID nesouhlasí
             }
 
             if (ModelState.IsValid)
             {
-                await _jsonDataService.EditUzivatelAsync(uzivatel); // Uloží jak do databáze, tak do JSON souboru
-                return RedirectToAction(nameof(Index));
+                await _jsonDataService.EditUzivatelAsync(uzivatel); // Aktualizuje uživatele v databázi i JSON
+                return RedirectToAction(nameof(Index)); // Přesměruje zpět na seznam
             }
-            return View(uzivatel);
+            return View(uzivatel); // Znovu zobrazí formulář, pokud data nejsou validní
         }
 
-        // GET: Uzivatele/Delete/5
+        // GET akce pro potvrzení smazání uživatele
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -161,6 +174,7 @@ namespace SpravaUzivatelu.Controllers
                 return NotFound();
             }
 
+            // Načte uživatele z JSON dat podle ID
             var uzivatel = (await _jsonDataService.GetUzivateleAsync())
                     .FirstOrDefault(m => m.Id == id);
             if (uzivatel == null)
@@ -168,16 +182,16 @@ namespace SpravaUzivatelu.Controllers
                 return NotFound();
             }
 
-            return View(uzivatel);
+            return View(uzivatel); // Zobrazí formulář pro potvrzení smazání
         }
 
-        // POST: Uzivatele/Delete/5
+        // POST akce pro smazání uživatele
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _jsonDataService.DeleteUzivatelAsync(id); // Smaže jak z databáze, tak z JSON souboru
-            return RedirectToAction(nameof(Index));
+            await _jsonDataService.DeleteUzivatelAsync(id); // Smaže uživatele z databáze i JSON
+            return RedirectToAction(nameof(Index)); // Přesměruje zpět na seznam
         }
     }
 }

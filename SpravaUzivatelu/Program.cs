@@ -11,74 +11,76 @@ namespace SpravaUzivatelu
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            // Pøidání služeb do kontejneru služeb.
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                                   ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+                options.UseSqlServer(connectionString)); // Konfigurace použití SQL Serveru
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter(); // Filtrování výjimek pøi vývoji databáze
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
+                // Konfigurace politiky hesel
                 options.Password.RequireDigit = false; // Nevyžadovat èíslo
                 options.Password.RequireLowercase = false; // Nevyžadovat malé písmeno
                 options.Password.RequireUppercase = false; // Nevyžadovat velké písmeno
                 options.Password.RequireNonAlphanumeric = false; // Nevyžadovat speciální znak
-                options.Password.RequiredLength = 4; // Nastavit minimální délku (napø. 4 znaky)
+                options.Password.RequiredLength = 4; // Minimální délka hesla nastavena na 4 znaky
             })
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddErrorDescriber<CzechIdentityErrorDescriberViewModel>(); // Použití èeských chybových zpráv;
+            .AddEntityFrameworkStores<ApplicationDbContext>() // Ukládání identit do databáze
+            .AddErrorDescriber<CzechIdentityErrorDescriberViewModel>(); // Použití èeských chybových hlášení
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.AccessDeniedPath = "/Account/Login"; // Pøesmìrování na pøihlášení pøi pøístupu bez oprávnìní
+                // Pøesmìrování na pøihlašovací stránku pøi pokusu o pøístup bez oprávnìní
+                options.AccessDeniedPath = "/Account/Login";
             });
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(); // Povolení MVC kontrolerù a pohledù
 
-            builder.Services.AddScoped<JsonDataService>();
+            builder.Services.AddScoped<JsonDataService>(); // Registrace JsonDataService jako závislosti
 
-            var app = builder.Build();
+            var app = builder.Build(); // Vytvoøení aplikace
 
-            // Nastavení konfigurovatelné IP adresy a portu
-            var ipAddress = builder.Configuration["ServerSettings:IPAddress"] ?? "192.168.1.20";
-            var httpPort = builder.Configuration["ServerSettings:HttpPort"] ?? "5000"; // HTTP port
-            var httpsPort = builder.Configuration["ServerSettings:HttpsPort"] ?? "5001"; // HTTPS port            
+            // Konfigurovatelná IP adresa a porty
+            var ipAddress = builder.Configuration["ServerSettings:IPAddress"] ?? "192.168.1.20"; // Výchozí IP
+            var httpPort = builder.Configuration["ServerSettings:HttpsPort"] ?? "5000"; // Výchozí HTTPS port
+            var httpsPort = builder.Configuration["ServerSettings:HttpPort"] ?? "5001"; // Výchozí HTTP port
 
-            // Pøidání HTTP
+            // Pøidání HTTP: odeberte komentáø pro povolení pøipojení pøes HTTP
             app.Urls.Add($"http://{ipAddress}:{httpPort}");
 
-            // Pøidání HTTPS
+            // Pøidání HTTPS: odeberte komentáø pro povolení pøipojení pøes HTTPS
             app.Urls.Add($"https://{ipAddress}:{httpsPort}");
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            // Konfigurace HTTP pipeline
+            if (app.Environment.IsDevelopment()) // Vývojový režim
             {
-                app.UseMigrationsEndPoint();
+                app.UseMigrationsEndPoint(); // Povolí zobrazení konce migrace
             }
-            else
+            else // Produkèní režim
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                app.UseExceptionHandler("/Home/Error"); // Obsluha výjimek s pøesmìrováním na stránku s chybou
+                app.UseHsts(); // Povolení HTTP Strict Transport Security (HSTS)
             }
 
             using (var scope = app.Services.CreateScope())
             {
-                await DatabaseSeeder.SeedAsync(scope.ServiceProvider);
+                await DatabaseSeeder.SeedAsync(scope.ServiceProvider); // Inicializace databáze
             }
 
-            // app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseHttpsRedirection(); // Pøesmìrování HTTP na HTTPS
+            app.UseStaticFiles(); // Povolí obsluhu statických souborù
 
-            app.UseRouting();
+            app.UseRouting(); // Povolí smìrování
 
-            app.UseAuthorization();
+            app.UseAuthorization(); // Povolí autorizaci
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Uzivatele}/{action=Index}/{id?}");
+                pattern: "{controller=Uzivatele}/{action=Index}/{id?}"); // Výchozí routovací šablona
 
-            app.Run();
+            app.Run(); // Spuštìní aplikace
         }
     }
 }
