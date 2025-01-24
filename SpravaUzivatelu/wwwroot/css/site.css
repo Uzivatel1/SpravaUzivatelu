@@ -19,6 +19,13 @@ html, body {
     flex: 1; /* Obsah zabírá zbývající prostor mezi headerem a footerem */
 }
 
+/* Tlaèítka stránkování: */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
 footer {
     height: 60px;
     line-height: 60px; /* Vertikální zarovnání textu ve footeru */
