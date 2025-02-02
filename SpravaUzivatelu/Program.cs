@@ -79,6 +79,10 @@ namespace SpravaUzivatelu
 
             app.UseRouting(); // Povolí smìrování
 
+            // I pøesto že middleware Identity se o autentizaci stará automaticky, nicménì, doporuèuje se ho ponechat,
+            // aby byla aplikace pøipravena na rozšíøení o další autentizaèní metody a správné zpracování požadavkù.
+            app.UseAuthentication();
+
             app.UseAuthorization(); // Povolí autorizaci
 
             app.MapControllerRoute(
