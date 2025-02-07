@@ -9,11 +9,14 @@
 </head>
 <body>
     <header class="shadow">
-        <div id="logo" class="d-flex align-items-center flex-column my-auto me-auto">
-            <h1>Správa uživatelů</h1>
-            <small>databáze</small>
-        </div>
-        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #292d73">
+        <a class="text-light" asp-area="" asp-controller="Uzivatele" asp-action="Index">
+            <div id="logo" class="d-flex align-items-center flex-column my-auto me-auto" asp-area="" asp-controller="Uzivatele" asp-action="Index">
+                <h1>Správa uživatelů</h1>
+                <small>databáze</small>
+            </div>
+        </a>
+        
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #458179">
             <div class="container-fluid">
                 <!-- Toggle tlačítko pro mobilní menu -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"

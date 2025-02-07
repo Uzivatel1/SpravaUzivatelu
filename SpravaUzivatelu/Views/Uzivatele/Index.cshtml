@@ -5,12 +5,10 @@
     ViewData["Title"] = "Seznam uživatelů";
 }
 
-@if (User.IsInRole(UserRoles.Admin))
-{
-    <p class="py-3">
-        <a class="create-new" asp-action="Create">Nový uživatel</a>
-    </p>
-}
+<p class="py-3 admin-controls @(User.IsInRole(UserRoles.Admin) ? "visible" : "")">
+    <a class="create-new" asp-action="Create">Nový uživatel</a>
+</p>
+
 
 <form asp-action="Index" method="get">
     <div class="container">
@@ -57,7 +55,7 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr style="cursor:pointer; color: #292d73" onclick="window.location='@Url.Action("Details", "Uzivatele", new { item.Id })';">
+                <tr style="cursor:pointer; color: #212529" onclick="window.location='@Url.Action("Details", "Uzivatele", new { item.Id })';">
                     <td>@Html.DisplayFor(modelItem => item.Id)</td>
                     <td>@Html.DisplayFor(modelItem => item.Prijmeni)</td>
                     <td>@Html.DisplayFor(modelItem => item.Jmeno)</td>
@@ -81,7 +79,7 @@
     var totalPages = Model.TotalPages;
 }
 
-<div class="pagination-container">
+<div class="pagination-container mt-5">
     <a asp-action="Index"
        asp-route-sortOrder="@ViewData["CurrentSort"]"
        asp-route-pageNumber="@(Model.PageIndex - 1)"
