@@ -43,7 +43,7 @@ namespace SpravaUzivatelu
             var app = builder.Build(); // Vytvoøení aplikace
 
             // Konfigurovatelná IP adresa a porty
-            var ipAddress = builder.Configuration["ServerSettings:IPAddress"] ?? "192.168.1.23"; // Výchozí IP
+            var ipAddress = builder.Configuration["ServerSettings:IPAddress"] ?? "0.0.0.0"; // Výchozí IP, napø. 192.162.1.20
             var httpsPort = builder.Configuration["ServerSettings:HttpsPort"] ?? "5000"; // Výchozí HTTPS port
             var httpPort = builder.Configuration["ServerSettings:HttpPort"] ?? "5001"; // Výchozí HTTP port
 
