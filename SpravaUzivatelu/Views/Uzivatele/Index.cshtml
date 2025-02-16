@@ -1,0 +1,117 @@
+﻿@using SpravaUzivatelu.Data
+@model PaginatedList<SpravaUzivatelu.Models.Uzivatel>
+
+@{
+    ViewData["Title"] = "Seznam uživatelů";
+}
+
+<p class="py-3 admin-controls @(User.IsInRole(UserRoles.Admin) ? "visible" : "")">
+    <a class="create-new" asp-action="Create">Nový uživatel</a>
+</p>
+
+
+<form asp-action="Index" method="get">
+    <div class="container">
+        <div class="row justify-content-md-start">
+            <div class="col col-md-auto border">
+                Zadejte příjmení: <input type="text" name="SearchPrijmeni" value="@ViewData["CurrentFilterPrijmeni"]" />
+            </div>
+            <div class="col col-md-auto border">
+                Zadejte jméno: <input type="text" name="SearchJmeno" value="@ViewData["CurrentFilterJmeno"]" />
+            </div>
+            <div class="col-md-auto ms-5 ps-5">
+                <input type="submit" value="Vyhledat" class="btn" /> |
+                <a asp-action="Index">Zpět na seznam</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="table-responsive-sm">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action="Index"
+                       asp-route-sortOrder="@ViewData["IdSortParm"]"
+                       asp-route-currentFilterPrijmeni="@ViewData["CurrentFilterPrijmeni"]"
+                       asp-route-currentFilterJmeno="@ViewData["CurrentFilterJmeno"]">Id</a>
+                </th>
+                <th>
+                    <a asp-action="Index"
+                       asp-route-sortOrder="@ViewData["PrijmeniSortParm"]"
+                       asp-route-currentFilterPrijmeni="@ViewData["CurrentFilterPrijmeni"]"
+                       asp-route-currentFilterJmeno="@ViewData["CurrentFilterJmeno"]">Příjmení</a>
+                </th>
+                <th>
+                    <a asp-action="Index"
+                       asp-route-sortOrder="@ViewData["JmenoSortParm"]"
+                       asp-route-currentFilterPrijmeni="@ViewData["CurrentFilterPrijmeni"]"
+                       asp-route-currentFilterJmeno="@ViewData["CurrentFilterJmeno"]">Jméno</a>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr style="cursor:pointer; color: #212529" onclick="window.location='@Url.Action("Details", "Uzivatele", new { item.Id })';">
+                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Prijmeni)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Jmeno)</td>
+                    @if (User.IsInRole(UserRoles.Admin))
+                    {
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Upravit</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Smazat</a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    var actualPage = Model.PageIndex;
+    var totalPages = Model.TotalPages;
+}
+
+<div class="pagination-container mt-5">
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilterPrijmeni="@ViewData["CurrentFilterPrijmeni"]"
+       asp-route-currentFilterJmeno="@ViewData["CurrentFilterJmeno"]"
+       class="btn @prevDisabled" id="prev-next">
+        Předchozí
+    </a>
+
+    @for (int i = 1; i <= totalPages; i++)
+    {
+        if (i == actualPage)
+        {
+            <a class="btn">@actualPage</a>
+        }
+        else
+        {
+            <a asp-route-pageNumber="@i"
+               asp-route-sortOrder="@ViewData["CurrentSort"]"
+               asp-route-currentFilterPrijmeni="@ViewData["CurrentFilterPrijmeni"]"
+               asp-route-currentFilterJmeno="@ViewData["CurrentFilterJmeno"]">
+                <button type="button" class="btn" disabled>@i</button>
+            </a>
+        }
+    }
+
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilterPrijmeni="@ViewData["CurrentFilterPrijmeni"]"
+       asp-route-currentFilterJmeno="@ViewData["CurrentFilterJmeno"]"
+       class="btn @nextDisabled" id="prev-next">
+        Následující
+    </a>
+</div>

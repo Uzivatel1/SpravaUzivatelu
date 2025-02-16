@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Správa uživatelů</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="shadow">
+        <a class="text-light" asp-area="" asp-controller="Uzivatele" asp-action="Index">
+            <div id="logo" class="d-flex align-items-center flex-column my-auto me-auto" asp-area="" asp-controller="Uzivatele" asp-action="Index">
+                <h1>Správa uživatelů</h1>
+                <small>databáze</small>
+            </div>
+        </a>
+        
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #458179">
+            <div class="container-fluid">
+                <!-- Toggle tlačítko pro mobilní menu -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Collapsible sekce -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- Levá část navigace: Logo a položka menu -->
+                    <ul class="navbar-nav flex-grow-1 me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" style="padding: 8px 0; margin: 0 8px" asp-area="" asp-controller="Uzivatele" asp-action="Index">Uživatele</a>
+                        </li>
+                    </ul>
+
+                    <!-- Pravá část navigace: Obsah LoginPartial -->
+                    <ul class="navbar-nav ms-auto">
+                        <partial name="_LoginPartial" />
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-5 pt-3">
+        <main role="main" class="pt-4">
+            <header class="pb-3">
+                <h1>@ViewData["Title"]</h1>
+            </header>
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - Správa uživatelů - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,27 @@
+﻿@model SpravaUzivatelu.Models.Uzivatel
+
+@{
+    ViewData["Title"] = "Karta uživatele";
+}
+
+<hr />
+<div>
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Jmeno)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Jmeno)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Prijmeni)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Prijmeni)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Upravit</a> |
+    <a asp-action="Index">Zpět na seznam</a>
+</div>

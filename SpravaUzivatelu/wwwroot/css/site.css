@@ -1,0 +1,164 @@
+a {
+    color: #458179;
+    text-decoration: none;
+}
+
+    a:hover {
+        color: #458179;
+    }
+
+.admin-controls {
+    min-height: 50px; /* Reserve space */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out;
+}
+
+    .admin-controls.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+body > header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 8px 0;
+    background: #458179;
+    color: white;
+    position: fixed;
+    top: 0;
+    z-index: 11;
+}
+
+.btn, .btn:disabled, #prev-next, #prev-next:disabled {
+    color: white;
+    background: #458179;
+    border: #458179;
+}
+
+    .btn:hover, .create-new:hover {
+        color: white;
+        filter: brightness(115%) contrast(85%);
+    }
+
+.btn-danger {
+    background: #db4223;
+}
+
+.container {
+    flex: 1; /* Obsah zabírá zbývající prostor mezi headerem a footerem, tlaèí footer dolù */
+}
+
+.create-new {
+    background: #458179;
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    border-radius: 22px;
+    border: 0;
+}
+
+.dropdown-menu {
+    background: #458179;
+}
+
+    .dropdown-menu :hover {
+        background: #458179;
+    }
+
+footer {
+    height: 60px;
+    line-height: 60px; /* Vertikální zarovnání textu ve footeru */
+    background-color: #f8f9fa;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}
+
+.form-check-input:checked {
+    background: #458179;
+}
+
+.form-group {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+html {
+    font-size: 14px;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#logo {
+    background: url('../images/logo.png') no-repeat;
+    background-size: 70px 50px;
+    margin-left: 20px;
+}
+
+    #logo > * {
+        margin: 0 0 0 100px;
+    }
+
+    #logo h1 {
+        font-weight: normal;
+        font-size: 1.5em;
+        line-height: 1.2em;
+    }
+
+    #logo small {
+        text-transform: uppercase;
+        font-size: 0.85em;
+    }
+
+main {
+    min-height: 90vh;
+}
+
+    main h1 {
+        color: #458179;
+        font-size: 2.3em;
+        font-weight: bold;
+        border-bottom: 4px solid #fade89;
+        width: max-content;
+        padding: 10px 0;
+    }
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+nav a {
+    border-bottom: 2px solid #458179;
+    text-transform: uppercase;
+}
+
+    nav a:hover {
+        border-bottom: 2px solid #fade89;
+    }
+
+/* Tlaèítka stránkování: */
+.pagination-container {
+    gap: 10px;
+    position: absolute;
+    bottom: 40px;
+    left: 50%; /* Moves the left edge of the element to the center */
+    transform: translateX(-50%); /* Shifts the element back by 50% of its own width, centering it properly */
+}
+
+#prev-next:hover {
+    background: #458179;
+}
+
+tr {
+    color: #458179;
+}
